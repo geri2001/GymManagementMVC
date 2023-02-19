@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>aspnet-GymManagementMVC-8b4205e9-73fc-43f5-8ef6-6ebd519b9c91</UserSecretsId>
+    <UserSecretsId>aspnet-GymManagementMVC-fc14763b-1f96-414d-8d2f-ae084308b756</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

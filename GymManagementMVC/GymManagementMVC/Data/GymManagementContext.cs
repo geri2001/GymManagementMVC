@@ -101,10 +101,14 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser, I
             entity.Property(e => e.WeekFrequency).HasMaxLength(50);
         });
 
+        modelBuilder.Entity<Subscription>()
+            .HasIndex(s => s.Code)
+            .IsUnique();
+
         OnModelCreatingPartial(modelBuilder);
 
         base.OnModelCreating(modelBuilder);
-    }
+	}
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

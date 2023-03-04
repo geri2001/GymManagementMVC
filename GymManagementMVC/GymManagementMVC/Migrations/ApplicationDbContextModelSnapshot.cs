@@ -17,7 +17,7 @@ namespace GymManagementMVC.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.13")
+                .HasAnnotation("ProductVersion", "6.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -108,6 +108,151 @@ namespace GymManagementMVC.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("GymManagementMVC.Models.Discount", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("ID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("DeactivationDate")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Discounts");
+                });
+
+            modelBuilder.Entity("GymManagementMVC.Models.DiscountedMemberSubscription", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("ID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("DiscountsId")
+                        .HasColumnType("int")
+                        .HasColumnName("DiscountsID");
+
+                    b.Property<int>("MemberSubscriptionsId")
+                        .HasColumnType("int")
+                        .HasColumnName("MemberSubscriptionsID");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DiscountsId");
+
+                    b.HasIndex("MemberSubscriptionsId");
+
+                    b.ToTable("DiscountedMemberSubscriptions");
+                });
+
+            modelBuilder.Entity("GymManagementMVC.Models.MemberSubscription", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("ID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AspNetUsersId")
+                        .HasColumnType("int")
+                        .HasColumnName("AspNetUsersID");
+
+                    b.Property<decimal>("DiscountValue")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("OriginalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("PaidPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("RemainingSessions")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("SubscriptionsId")
+                        .HasColumnType("int")
+                        .HasColumnName("SubscriptionsID");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AspNetUsersId");
+
+                    b.HasIndex("SubscriptionsId");
+
+                    b.ToTable("MemberSubscriptions");
+                });
+
+            modelBuilder.Entity("GymManagementMVC.Models.Subscription", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("ID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<short>("NumberOfMonths")
+                        .HasColumnType("smallint");
+
+                    b.Property<int>("TotalNumberOfSessions")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("WeekFrequency")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Subscriptions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
@@ -247,6 +392,44 @@ namespace GymManagementMVC.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("GymManagementMVC.Models.DiscountedMemberSubscription", b =>
+                {
+                    b.HasOne("GymManagementMVC.Models.Discount", "Discounts")
+                        .WithMany("DiscountedMemberSubscriptions")
+                        .HasForeignKey("DiscountsId")
+                        .IsRequired()
+                        .HasConstraintName("FK_DiscountedMemberSubscriptions_Discounts");
+
+                    b.HasOne("GymManagementMVC.Models.MemberSubscription", "MemberSubscriptions")
+                        .WithMany("DiscountedMemberSubscriptions")
+                        .HasForeignKey("MemberSubscriptionsId")
+                        .IsRequired()
+                        .HasConstraintName("FK_DiscountedMemberSubscriptions_MemberSubscriptions");
+
+                    b.Navigation("Discounts");
+
+                    b.Navigation("MemberSubscriptions");
+                });
+
+            modelBuilder.Entity("GymManagementMVC.Models.MemberSubscription", b =>
+                {
+                    b.HasOne("GymManagementMVC.Models.ApplicationUser", "AspNetUsers")
+                        .WithMany("MemberSubscriptions")
+                        .HasForeignKey("AspNetUsersId")
+                        .IsRequired()
+                        .HasConstraintName("FK_MemberSubscriptions_AspNetUsers");
+
+                    b.HasOne("GymManagementMVC.Models.Subscription", "Subscriptions")
+                        .WithMany("MemberSubscriptions")
+                        .HasForeignKey("SubscriptionsId")
+                        .IsRequired()
+                        .HasConstraintName("FK_MemberSubscriptions_Subscriptions");
+
+                    b.Navigation("AspNetUsers");
+
+                    b.Navigation("Subscriptions");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
@@ -296,6 +479,26 @@ namespace GymManagementMVC.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("GymManagementMVC.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("MemberSubscriptions");
+                });
+
+            modelBuilder.Entity("GymManagementMVC.Models.Discount", b =>
+                {
+                    b.Navigation("DiscountedMemberSubscriptions");
+                });
+
+            modelBuilder.Entity("GymManagementMVC.Models.MemberSubscription", b =>
+                {
+                    b.Navigation("DiscountedMemberSubscriptions");
+                });
+
+            modelBuilder.Entity("GymManagementMVC.Models.Subscription", b =>
+                {
+                    b.Navigation("MemberSubscriptions");
                 });
 #pragma warning restore 612, 618
         }

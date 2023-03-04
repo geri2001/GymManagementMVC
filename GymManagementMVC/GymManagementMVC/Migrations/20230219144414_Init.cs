@@ -57,6 +57,42 @@ namespace GymManagementMVC.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Discounts",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Value = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "date", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "date", nullable: false),
+                    DeactivationDate = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Discounts", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Subscriptions",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
+                    NumberOfMonths = table.Column<short>(type: "smallint", nullable: false),
+                    WeekFrequency = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    TotalNumberOfSessions = table.Column<int>(type: "int", nullable: false),
+                    TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Subscriptions", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -162,6 +198,61 @@ namespace GymManagementMVC.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "MemberSubscriptions",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AspNetUsersID = table.Column<int>(type: "int", nullable: false),
+                    SubscriptionsID = table.Column<int>(type: "int", nullable: false),
+                    OriginalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DiscountValue = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PaidPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "date", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "date", nullable: false),
+                    RemainingSessions = table.Column<int>(type: "int", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MemberSubscriptions", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_MemberSubscriptions_AspNetUsers",
+                        column: x => x.AspNetUsersID,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_MemberSubscriptions_Subscriptions",
+                        column: x => x.SubscriptionsID,
+                        principalTable: "Subscriptions",
+                        principalColumn: "ID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DiscountedMemberSubscriptions",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MemberSubscriptionsID = table.Column<int>(type: "int", nullable: false),
+                    DiscountsID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DiscountedMemberSubscriptions", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_DiscountedMemberSubscriptions_Discounts",
+                        column: x => x.DiscountsID,
+                        principalTable: "Discounts",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_DiscountedMemberSubscriptions_MemberSubscriptions",
+                        column: x => x.MemberSubscriptionsID,
+                        principalTable: "MemberSubscriptions",
+                        principalColumn: "ID");
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -200,6 +291,26 @@ namespace GymManagementMVC.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DiscountedMemberSubscriptions_DiscountsID",
+                table: "DiscountedMemberSubscriptions",
+                column: "DiscountsID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DiscountedMemberSubscriptions_MemberSubscriptionsID",
+                table: "DiscountedMemberSubscriptions",
+                column: "MemberSubscriptionsID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MemberSubscriptions_AspNetUsersID",
+                table: "MemberSubscriptions",
+                column: "AspNetUsersID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MemberSubscriptions_SubscriptionsID",
+                table: "MemberSubscriptions",
+                column: "SubscriptionsID");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -220,10 +331,22 @@ namespace GymManagementMVC.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "DiscountedMemberSubscriptions");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "Discounts");
+
+            migrationBuilder.DropTable(
+                name: "MemberSubscriptions");
+
+            migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Subscriptions");
         }
     }
 }

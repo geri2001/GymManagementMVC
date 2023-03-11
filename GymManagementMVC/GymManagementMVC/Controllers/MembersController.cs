@@ -3,6 +3,8 @@ using GymManagementMVC.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Metrics;
 
 namespace GymManagementMVC.Controllers
 {
@@ -18,10 +20,27 @@ namespace GymManagementMVC.Controllers
             _userManager = userManager;
         }
         // GET: MembersController
-        public ActionResult Index()
-        {
-            var members = _context.Users.ToList();
+        //public actionresult index()
+        //{
+        //    var members = _context.users.tolist();
 
+        //    return view(members);
+        //}
+
+        public ActionResult Index(string? name)
+        {
+            List<ApplicationUser> members;
+
+            if (string.IsNullOrWhiteSpace(name))
+                members = _context.Users
+                    .Where(u => !u.IsDeleted)
+                    .ToList();
+            else
+                members = _context.Users
+                    .Where(s => s.FirstName.Contains(name) || s.LastName.Contains(name) || s.Email.Contains(name))
+                    .Where(u => !u.IsDeleted)
+                    .ToList();
+            
             return View(members);
         }
 
@@ -75,25 +94,15 @@ namespace GymManagementMVC.Controllers
             }
         }
 
-        // GET: MembersController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
 
         // POST: MembersController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            var member = _context.Users.FirstOrDefault(x => x.Id == id);
+            member.IsDeleted = true;
+            _context.SaveChanges();
+            return RedirectToAction(nameof(Index));
+
         }
     }
 }

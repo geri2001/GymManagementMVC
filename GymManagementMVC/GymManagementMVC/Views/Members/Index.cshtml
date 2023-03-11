@@ -9,6 +9,11 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+@using(Html.BeginForm("Index","Members",FormMethod.Get))
+{<p>
+        Search Any client : @Html.TextBox("name")
+        <input type="submit" value="Search" /></p>
+}
 <table class="table">
     <thead>
         <tr>
@@ -34,6 +39,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.PhoneNumber)
             </th>
+           
             
         
             <th></th>

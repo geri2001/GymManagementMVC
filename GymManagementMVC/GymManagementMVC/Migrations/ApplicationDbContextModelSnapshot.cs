@@ -138,7 +138,7 @@ namespace GymManagementMVC.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Discounts");
+                    b.ToTable("Discounts", (string)null);
                 });
 
             modelBuilder.Entity("GymManagementMVC.Models.DiscountedMemberSubscription", b =>
@@ -164,7 +164,7 @@ namespace GymManagementMVC.Migrations
 
                     b.HasIndex("MemberSubscriptionsId");
 
-                    b.ToTable("DiscountedMemberSubscriptions");
+                    b.ToTable("DiscountedMemberSubscriptions", (string)null);
                 });
 
             modelBuilder.Entity("GymManagementMVC.Models.MemberSubscription", b =>
@@ -211,7 +211,7 @@ namespace GymManagementMVC.Migrations
 
                     b.HasIndex("SubscriptionsId");
 
-                    b.ToTable("MemberSubscriptions");
+                    b.ToTable("MemberSubscriptions", (string)null);
                 });
 
             modelBuilder.Entity("GymManagementMVC.Models.Subscription", b =>
@@ -255,7 +255,7 @@ namespace GymManagementMVC.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("Subscriptions");
+                    b.ToTable("Subscriptions", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>

@@ -40,7 +40,7 @@ namespace GymManagementMVC.Controllers
                     .Where(s => s.FirstName.Contains(name) || s.LastName.Contains(name) || s.Email.Contains(name))
                     .Where(u => !u.IsDeleted)
                     .ToList();
-            
+
             return View(members);
         }
 
@@ -74,7 +74,9 @@ namespace GymManagementMVC.Controllers
         // GET: MembersController/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            var member = _context.Users.FirstOrDefault(u => u.Id == id);
+
+            return View(member);
         }
 
 
@@ -82,16 +84,28 @@ namespace GymManagementMVC.Controllers
         // POST: MembersController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, ApplicationUser user)
         {
-            try
+
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                var member = _context.Users.FirstOrDefault(u => u.Id == id);
+                if (member == null)
+                {
+                    return NotFound ();
+                }
+                member.FirstName = user.FirstName;
+                member.LastName = user.LastName;
+                member.Email = user.Email;
+                member.PhoneNumber = user.PhoneNumber;
+                member.UserName = user.UserName;
+                member.CardNumber = user.CardNumber;
+                member.Birthday = user.Birthday;
+                _context.SaveChanges();
+                return RedirectToAction("Index");
+
             }
-            catch
-            {
-                return View();
-            }
+            return View(user);
         }
 
 
